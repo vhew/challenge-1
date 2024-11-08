@@ -5,19 +5,32 @@ import { backend } from 'declarations/backend';
 const NameInput = () => {
   const [greeting, setGreeting] = useState(null);
   const [name, setName] = useState(null);
+  const [names, setNames] = useState(null);
 
   function handleSubmit(event) {
     event.preventDefault();
     backend.greet(name).then((newGreeting) => {
       setGreeting(newGreeting);
     });
+    backend.store(name);
+    return false;
+  }
+
+  function handleSubmit2(event) {
+    event.preventDefault();
+    backend.submittedNames().then((newNames) => {
+      setNames(newNames);
+      list.innerHTML = newNames.map(i => `<li>${i}</li>`).join('');
+    });
     return false;
   }
 
   function handleGoBack() {
     setName('');
+    setNames(null);
     setGreeting(null);
   }
+
 
   return (
     <div className="bg-dark-infinite flex h-full w-full items-center justify-center rounded px-4 py-8 font-sans text-black">
@@ -43,6 +56,14 @@ const NameInput = () => {
               >
                 Submit
               </button>
+              <br /><br />
+              <button
+                onClick={handleSubmit2}
+                className="bg-picton-blue focus:ring-picton-blue hover:bg-picton-blue hover:shadow-picton-blue/30 rounded-md px-4 py-2 font-semibold text-white shadow-lg transition duration-300 ease-in-out hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-opacity-50"
+              >
+                View Names
+              </button> 
+              <ul id="list"></ul>
             </form>
           </Card>
         ) : (
@@ -50,10 +71,6 @@ const NameInput = () => {
             <div className="bg-infinite flex h-full w-full flex-col items-center justify-center rounded-[20px] px-4 py-12">
               <h2 className="mb-4 text-3xl font-medium text-black">{greeting}</h2>
               <p className="text-black-300 mb-6">Thank you for submitting your name.</p>
-
-              <h2 className="mb-4 text-3xl font-medium text-black">submittedNames</h2>
-              <p className="text-black-300 mb-6">Name1</p>
-              <p className="text-black-300 mb-6">Name2</p>
 
               <button
                 onClick={handleGoBack}
